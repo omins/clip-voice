@@ -36,11 +36,15 @@ export const createSpeech = async (
       model,
       voice,
       input: text,
-    };
+      instructions: `
+      Voice: Clear, authoritative, and composed, projecting confidence and professionalism.
 
-    if (instructions) {
-      speechParams.instructions = instructions;
-    }
+Tone: Neutral and informative, maintaining a balance between formality and approachability.
+
+Punctuation: Structured with commas and pauses for clarity, ensuring information is digestible and well-paced.
+
+Delivery: Steady and measured, with slight emphasis on key figures and deadlines to highlight critical points.`,
+    };
 
     const mp3 = await openai.audio.speech.create(speechParams);
     const buffer = Buffer.from(await mp3.arrayBuffer());
