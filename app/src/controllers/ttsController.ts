@@ -15,7 +15,7 @@ export const createSpeech = async (
   const {
     text,
     model = "gpt-4o-mini-tts",
-    voice = "coral",
+    voice = "ash",
     instructions,
   } = request.body;
 

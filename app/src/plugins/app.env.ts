@@ -4,6 +4,7 @@ import * as z from "zod";
 
 const schema = z.object({
   OPENAI_API_KEY: z.string().optional(),
+  VITE_API_URL: z.string().default("/api"),
 });
 
 const jsonSchema = z.toJSONSchema(schema, { target: "draft-7" });

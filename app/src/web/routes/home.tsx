@@ -21,7 +21,8 @@ export default function Home() {
     setAudioUrl(null);
 
     try {
-      const response = await fetch("/api/tts", {
+      const apiUrl = import.meta.env.VITE_API_URL;
+      const response = await fetch(`${apiUrl}/tts`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -88,8 +89,10 @@ export default function Home() {
             <Label className="text-sm font-medium text-slate-700 mb-3 block">
               Generated Speech
             </Label>
+            {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
             <audio controls className="w-full">
               <source src={audioUrl} type="audio/mpeg" />
+              <track kind="captions" srcLang="en" label="English" />
               Your browser does not support the audio element.
             </audio>
           </div>
