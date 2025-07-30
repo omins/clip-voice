@@ -1,0 +1,68 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Commit All Changes Rule (with Conventional Commits)
+
+When instructed to "commit all changes" or "commit all":
+
+1. Stage all changes using `git add .`.
+2. Review the staged changes with `git diff --cached`.
+3. Generate a concise, descriptive commit title and message that strictly follows the [Conventional Commits 1.0.0](mdc:https:/www.conventionalcommits.org/en/v1.0.0) specification (see below) and commit message length rule.
+4. Commit the changes with the generated message using `git commit -m "<message>"`.
+5. If any error occurs during this process, stop and do not proceed further.
+
+### Commit Message Length Rule
+
+- **Title (first line):**  
+  - MUST be 50 characters or fewer.
+- **Body and footers:**  
+  - Each line SHOULD be 50 characters or fewer.
+
+## Conventional Commits Specification
+
+- **Format:**  
+  ```
+  <type>[optional scope]: <description>
+
+  [optional body]
+
+  [optional footer(s)]
+  ```
+
+### Common Commit Types
+| Type     | Description                                                      |
+|----------|------------------------------------------------------------------|
+| feat     | A new feature                                                    |
+| fix      | A bug fix                                                        |
+| docs     | Changes to documentation                                         |
+| style    | Formatting, missing semi colons, etc; no code change             |
+| refactor | Refactoring production code                                      |
+| test     | Adding tests, refactoring test; no production code change        |
+| chore    | Updating build tasks, package manager configs, etc; no prod code |
+
+- **Scope:**  
+  - Optional, placed in parentheses after type, e.g., `feat(parser): ...`
+- **Breaking Changes:**  
+  - Indicate by adding `!` after type/scope, e.g., `feat!: ...` or `feat(api)!: ...`
+  - Or add a `BREAKING CHANGE:` footer after the body
+- **Description:**  
+  - Required, short summary after the type/scope prefix
+- **Body:**  
+  - Optional, for additional context, must be separated from description by a blank line
+- **Footers:**  
+  - Optional, for metadata (e.g., `BREAKING CHANGE: ...`, `Refs: #123`)
+- **Examples:**
+  - `feat: add user login page`
+  - `fix(auth): handle expired token error`
+  - `docs: update README`
+  - `refactor!: remove deprecated API\n\nBREAKING CHANGE: The old API endpoints have been removed.`
+
+**Additional Requirements:**
+- The commit message MUST strictly follow the Conventional Commits format.
+- If a change is both a feature and a fix, split into multiple commits.
+- If a breaking change is present, indicate it using `!` or a `BREAKING CHANGE:` footer as per the spec.
+- If you are unsure of the type, prefer `chore` for general maintenance.
+
+This rule ensures that all changes are properly reviewed, committed with an appropriate, conventional message, and that errors are handled by halting the process. The commit history will be clear, automatable, and semver-friendly.
