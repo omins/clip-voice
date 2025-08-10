@@ -12,12 +12,18 @@ export const createSpeech = async (
   request: FastifyRequest<{ Body: TTSRequestBody }>,
   reply: FastifyReply,
 ) => {
-  const {
-    text,
-    model = "gpt-4o-mini-tts",
-    voice = "ash",
-    instructions,
-  } = request.body;
+  const { text, model = "gpt-4o-mini-tts", voice = "verse" } = request.body;
+
+  const instructions = `
+Role: A programmer with calm tone.
+Accent: Neutral, standard English, no regional inflection.
+Emotional range: Narrow; consistent delivery without emotional shifts.
+Intonation: Flat to mildly varied; avoid dramatic pitch changes.
+Impressions: Informative and approachable, but not overly friendly.
+Speed of speech: Fast, like natural conversation, around 210 words per minute.
+Tone: Calm, even, and minimal emphasis; balanced volume throughout.
+Whispering: None; full voice with natural projection.
+`;
 
   if (!text || typeof text !== "string") {
     return reply.code(400).send({ error: "Text is required" });
@@ -36,14 +42,7 @@ export const createSpeech = async (
       model,
       voice,
       input: text,
-      instructions: `
-      Voice: Clear, authoritative, and composed, projecting confidence and professionalism.
-
-Tone: Neutral and informative, maintaining a balance between formality and approachability.
-
-Punctuation: Structured with commas and pauses for clarity, ensuring information is digestible and well-paced.
-
-Delivery: Steady and measured, with slight emphasis on key figures and deadlines to highlight critical points.`,
+      instructions,
     };
 
     const mp3 = await openai.audio.speech.create(speechParams);
