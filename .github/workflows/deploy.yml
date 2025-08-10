@@ -34,6 +34,8 @@ jobs:
           tags: |
             ${{ env.IMAGE_LATEST }}
             ${{ env.IMAGE_SHA }}
+          build-args: |
+            VITE_API_URL=${{ secrets.VITE_API_URL }}
 
       
 
@@ -48,7 +50,6 @@ jobs:
             set -e
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
             cd "${{ secrets.SERVER_APP_DIR }}"
-            cp "${{ secrets.SERVER_ENV_PATH }}" "${{ secrets.SERVER_APP_ENV_PATH }}"
             # first-time compose file presence
             [ -f docker-compose.yml ] || (echo "missing docker-compose.yml" && exit 1)
             docker compose pull

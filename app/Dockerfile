@@ -9,6 +9,10 @@ COPY app/package.json /usr/src/app/app/package.json
 RUN yarn install --immutable
 
 COPY app/ /usr/src/app/app/
+
+ARG VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL
+
 RUN yarn workspace @fastify-boilerplate/app build
 
 ENV NODE_ENV production
