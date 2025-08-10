@@ -1,8 +1,6 @@
 services:
   web:
-    build:
-      context: .
-      dockerfile: app/Dockerfile
+    image: ghcr.io/omins/clip-voice:latest   # all lowercase
     env_file:
       - /opt/envs/clip-voice.env
     ports:

@@ -1,27 +1,42 @@
-name: Simple deploy (build on server)
+name: CI/CD via GHCR
 on:
   push:
     branches: ["main"]
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write   # allow pushing to GHCR
+
+    env:
+      IMAGE_LATEST: ghcr.io/${{ github.repository }}:latest
+      IMAGE_SHA: ghcr.io/${{ github.repository }}:${{ github.sha }}
+
     steps:
       - uses: actions/checkout@v4
 
-      - name: Upload repo to server
-        uses: appleboy/scp-action@v0.1.7
+      # Build & push image to GHCR
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
         with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          source: "."
-          target: "${{ secrets.SERVER_APP_DIR }}"
-          overwrite: true
-          exclude: |
-            .git/**
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build & restart
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: app/Dockerfile
+          push: true
+          tags: |
+            ${{ env.IMAGE_LATEST }}
+            ${{ env.IMAGE_SHA }}
+
+      # Deploy on server: docker login, pull, restart
+      - name: Deploy on EC2
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -29,6 +44,10 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             set -e
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
             cd "${{ secrets.SERVER_APP_DIR }}"
-            docker compose up -d --build --remove-orphans
+            # first-time compose file presence
+            [ -f docker-compose.yml ] || (echo "missing docker-compose.yml" && exit 1)
+            docker compose pull
+            docker compose up -d
             docker image prune -f || true
