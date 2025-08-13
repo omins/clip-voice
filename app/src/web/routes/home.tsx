@@ -25,8 +25,7 @@ export default function Home() {
     setAudioUrl(null);
 
     try {
-      const apiUrl =
-        import.meta.env.VITE_API_URL || "https://voice.omin.dev/api";
+      const apiUrl = import.meta.env.VITE_API_URL;
       const response = await fetch(`${apiUrl}/tts`, {
         method: "POST",
         headers: {
